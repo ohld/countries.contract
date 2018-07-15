@@ -1,0 +1,29 @@
+{
+  "name": "countries.contract",
+  "version": "0.0.1",
+  "description": "Smart-contract for Countries",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohld/countries.contract.git"
+  },
+  "keywords": [
+    "ETH",
+    "BTC",
+    "LND",
+    "smart-contracts"
+  ],
+  "author": "Daniil Okhlopkov and Aleksey Bykhun",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ohld/countries.contract/issues"
+  },
+  "homepage": "https://github.com/ohld/countries.contract#readme",
+  "dependencies": {
+    "openzeppelin-zos": "^1.9.1",
+    "zos-lib": "^1.3.0"
+  }
+}
