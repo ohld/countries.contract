@@ -59,12 +59,12 @@ contract('WorldToken', async (accounts) => {
       // await world.buy(russiaID, { from: russiaBuyer}).value('1')
       await world.buy(russiaID, { from: russiaBuyer, value: '1' })
 
-      assert.equal(true, true, 'cant buy Russia')
+      assert.equal(true, true, 'can not buy Russia')
 
       const _lastPrice = await world.getCountryLastPrice.call(russiaID)
       const lastPrice = _lastPrice.valueOf()
 
-      assert.equal(lastPrice, '1', 'last price not set')
+      assert.equal(lastPrice, '1', 'last price is not set')
     })
 
     it('has right name', async () => {
@@ -72,8 +72,8 @@ contract('WorldToken', async (accounts) => {
 
       const [ name, color, text ] = _russia.valueOf()
 
-      console.log('name', name)
-      console.log('color', color)
+      console.log('name:', name)
+      console.log('color:', color)
 
       assert.equal(name, 'Russia', 'wrong name')
       assert.equal(color, '0xffffff', 'wrong default color')
@@ -84,19 +84,18 @@ contract('WorldToken', async (accounts) => {
 
       const _reply = world.buy(russiaID, { from: chinaBuyer, value: '1' })
 
-      assertRevert(_reply);
+      assertRevert(_reply)
     })
 
-    it('buys if price is greater', () => {})
+    it('buys if price is greater', async () => {
+      const _reply = await world.buy(russiaID, { from: chinaBuyer, value: '3' })
+      assert(_reply)
+    })
 
     it('has right owner', async () => {
-      // let russiaID = await world.adopt(1, { from: russiaBuyer })
-      // let chinaID = await world.adopt(2, { from: chinaBuyer })
-      //
-      // let owners = await world.getAdopters.call().valueOf()
-      // let owner = owners[1]
-      //
-      // assert.equal(owner, russiaBuyer, 'wrong owner')
+      await world.buy(chinaID, { from: chinaBuyer, value: '3' })
+      let chinaOwner = await world.ownerOf(chinaID, { from: russiaBuyer })
+      assert.equal(chinaOwner, chinaBuyer, 'wrong China owner')
     })
   })
 
