@@ -9,32 +9,31 @@ contract WorldToken is ERC721Token, Ownable {
     string DEFAULT_TEXT = ""; // ?????????
 
     struct Country {
-      string _name;
-      uint256 _createdAt;
+        string _name;
+        uint256 _createdAt;
 
-      uint256 lastPrice;
+        uint256 lastPrice;
 
-      bytes3 color;
-      string text;
+        bytes3 color;
+        string text;
     }
 
     mapping (uint256 => Country) map;
 
     constructor () public ERC721Token("WorldToken", "WORLD") {}
 
-    function mintTo(address _to, string _tokenURI, string _countryName) public onlyOwner
-      {
-      uint256 newTokenId = _getNextTokenId();
-      _mint(_to, newTokenId);
-      _setTokenURI(newTokenId, _tokenURI);
+    function mintTo(address _to, string _tokenURI, string _countryName) public onlyOwner {
+        uint256 newTokenId = _getNextTokenId();
+        _mint(_to, newTokenId);
+        _setTokenURI(newTokenId, _tokenURI);
 
-      map[newTokenId] = Country(
-        _countryName, // ?
-        now,
-        uint256(0),
-        DEFAULT_COLOR,
-        DEFAULT_TEXT
-      );
+        map[newTokenId] = Country(
+            _countryName, // ?
+            now,
+            uint256(0),
+            DEFAULT_COLOR,
+            DEFAULT_TEXT
+        );
     }
 
     /**
