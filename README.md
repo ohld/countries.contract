@@ -13,6 +13,8 @@ truffle test --network=rinkeby
 # 1. Run Ganache or Geth or whatever configured
 # 2. Run truffle test suite:
 truffle test --network=local
+# or
+truffle test --network=development
 
 # deploy
 truffle migrate --network=rinkeby
