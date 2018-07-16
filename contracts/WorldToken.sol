@@ -5,7 +5,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract WorldToken is ERC721Token, Ownable {
 
-    bytes12 DEFAULT_COLOR = 0xffffff; // ????????
+    bytes3 DEFAULT_COLOR = 0xffffff; // ????????
     string DEFAULT_TEXT = ""; // ?????????
 
     struct Country {
@@ -14,7 +14,7 @@ contract WorldToken is ERC721Token, Ownable {
 
       uint256 lastPrice;
 
-      bytes12 color;
+      bytes3 color;
       string text;
     }
 
@@ -23,7 +23,7 @@ contract WorldToken is ERC721Token, Ownable {
     constructor () public ERC721Token("WorldToken", "WORLD") {}
 
     function mintTo(address _to, string _tokenURI, string _countryName) public onlyOwner
-      returns (uint256 newCountryId) {
+      {
       uint256 newTokenId = _getNextTokenId();
       _mint(_to, newTokenId);
       _setTokenURI(newTokenId, _tokenURI);
@@ -63,7 +63,7 @@ contract WorldToken is ERC721Token, Ownable {
     }
 
     function getCountry(uint256 _countryId) public view
-      returns (string name, bytes12 color, string text) {
+      returns (string name, bytes3 color, string text) {
         require(exists(_countryId));
         return (
           map[_countryId]._name,
@@ -86,6 +86,13 @@ contract WorldToken is ERC721Token, Ownable {
         operatorApprovals[_from][_to] = true;
 
         safeTransferFrom(_from, _to, _countryId);
+
+        map[_countryId].lastPrice = msg.value;
+    }
+
+    function customize(uint256 _countryId, bytes3 color, string text) public onlyOwnerOf(_countryId) {
+        map[_countryId].color = color;
+        map[_countryId].text = text;
     }
 
 
