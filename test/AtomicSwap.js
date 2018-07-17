@@ -30,9 +30,10 @@ contract('AtomicSwap', async (accounts) => {
   describe('successful swaps', () => {
     it('Alice locks ether', async () => {
       const secret = 'aaa000aaa000'
+      const swapAmount = 100000
       const hash = '0x' + sha256(secret)
 
-      await swap.deposit(bob, hash, { from: alice, value: 100000 /* wei */ })
+      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
 
       const _swap = await swap.swaps.call(alice, bob, hash)
 
@@ -43,7 +44,27 @@ contract('AtomicSwap', async (accounts) => {
 
       assert.notEqual(_secret, secret, 'should not be published')
       assert.equal(hash, _hash, 'should be the same hash')
-      assert.equal(balance.toNumber(), 100000, 'should be funded')
+      assert.equal(balance.toNumber(), swapAmount, 'should be funded')
+    })
+
+    it('Bob withdraw ether', async () => {
+      const secret = 'aaa000aaa000'
+      const swapAmount = 100000
+
+      const balance_before = web3.eth.getBalance(bob).toNumber()
+      console.log('Bobs balance before withdraw:', balance_before)
+
+      await swap.withdraw(alice, secret, {from: bob})
+      const _swap = await swap.swaps.call(alice, bob, hash)
+      console.log('Swap', _swap)
+
+      const [_secret, _hash, created, balance] = _swap.valueOf()
+      console.log(_secret, _hash, created, balance)
+      assert.equal(_secret, secret, 'should be published after withdraw')
+
+      const balance_after = web3.eth.getBalance(bob).toNumber()
+      console.log('Bobs balance after withdraw:', balance_after)
+      assert.equal(balance_before + swapAmount, balance_after, 'bob received ether')
     })
   })
 
