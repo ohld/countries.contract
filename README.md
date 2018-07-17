@@ -18,4 +18,9 @@ truffle test --network=development
 
 # deploy
 truffle migrate --network=rinkeby
+
+# clean build artifacts if cache gets in the way
+truffle migrate --network=local --reset
+# or
+truffle migrate --network=development --reset
 ```
