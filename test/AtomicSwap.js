@@ -68,8 +68,6 @@ contract('AtomicSwap', async (accounts) => {
     it('Bob withdraw ether', async () => {
       const balance_before = web3.eth.getBalance(bob).toNumber()
 
-      console.log('secret', secret)
-
       await swap.withdraw(alice, secret, {from: bob})
 
       const _swap = await swap.swaps.call(alice, bob, hash)
@@ -84,13 +82,45 @@ contract('AtomicSwap', async (accounts) => {
 
       assert(balance_before < balance_after, 'bob received ether')
     })
+
+    it('Locks twice with the same secret', async () => {
+      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
+      const _swap1 = await swap.swaps.call(alice, bob, hash)
+      const [_secret1, _hash1, created1, balance1] = _swap1.valueOf()
+
+      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
+      const _swap2 = await swap.swaps.call(alice, bob, hash)
+      const [_secret2, _hash2, created2, balance2] = _swap2.valueOf()
+
+      assert.notEqual(_secret1, _secret2, 'same secret')
+      assert.equal(_hash1, _hash2, 'same hash')
+      assert.equal(created1, created2, 'same created')
+      assert.equal(balance1, balance2, 'same balance')
+    })
+
+    it('Withdraw two times in a row', async () => {
+      assert(await swap.withdraw(alice, secret, {from: bob}), 'valid first withdrawal')
+      assertRevert(await swap.withdraw(alice, secret, {from: bob}), 'invalid second withdrawal')
+    })
+
+    it('Locks and random secret does not fit', async () => {
+      const wrongSecret = '0x' + 'YOURMOM'
+      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
+      const balance_before = web3.eth.getBalance(bob).toNumber()
+
+      const _reply = await swap.withdraw(alice, wrongSecret, {from: bob})
+      assertRevert(_reply)
+
+      const balance_after = web3.eth.getBalance(bob).toNumber()
+      asser.equal(balance_before, balance_after, 'bob did not guess the secret')
+    })
   })
 
   // guy 1 does not lock ether
   // guy 2 tries to withdraw, failed
 
-  // guy 1 lcks ether
-  // guy 2 tries to guess secret but fails
+  // guy 1 lcks ether  DONE
+  // guy 2 tries to guess secret but fails  DONE
 
   // guy 1 locks ether twice with the same secret
 
