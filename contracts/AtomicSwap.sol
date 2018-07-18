@@ -47,16 +47,18 @@ contract AtomicSwap {
         return swaps[creator][msg.sender][hash].balance;
     }
 
-    /* function getHash (address creator) public view returns (bytes32) {
-        return swaps[creator][msg.sender].secretHash;
-    } */
+    function checkSig (bytes32 _secret) public pure returns (bytes32) {
+      bytes32 hash = sha256(abi.encodePacked(_secret));
+      return hash;
+    }
 
     function withdraw (address creator, bytes32 _secret) public {
         bytes32 hash = sha256(abi.encodePacked(_secret));
-        Swap memory swap = swaps[creator][msg.sender][hash];
+        Swap storage swap = swaps[creator][msg.sender][hash];
         /* require(hash == swap.secretHash); */
         require(swap.balance > 0);
         require(swap.secret == bytes32(0));
+
         swap.secret = _secret;
 
         msg.sender.transfer(swap.balance);

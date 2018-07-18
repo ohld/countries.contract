@@ -6,6 +6,9 @@ const assertJump = require('./helpers/assertJump')
 const assertRevert = require('./helpers/assertRevert')
 const timetravel = require('./helpers/time-travel')
 
+const crypto = require('crypto')
+const genSecret = () => crypto.randomBytes(32)
+
 contract('AtomicSwap', async (accounts) => {
 
   const Owner = accounts[0]
@@ -18,6 +21,20 @@ contract('AtomicSwap', async (accounts) => {
     swap = await AtomicSwap.deployed()
   })
 
+  describe('sha256', () => {
+    it('the same in js', async () => {
+      const __secret = genSecret()
+
+      const secret = '0x' + __secret.toString('hex')
+      const hash = '0x' + sha256(__secret)
+
+      const _sig = await swap.checkSig.call(secret)
+      console.log('sig', _sig)
+
+      assert.equal(_sig.valueOf(), hash, 'hashes should match')
+    })
+  })
+
   // guy 1 locks ether
   // check swap is created and balance > 0
   // DONE
@@ -28,11 +45,12 @@ contract('AtomicSwap', async (accounts) => {
   // guy 1 locks ether twice with different secrets
   // guy 2 withdraws both successfully
   describe('successful swaps', () => {
-    it('Alice locks ether', async () => {
-      const secret = 'aaa000aaa000'
-      const swapAmount = 100000
-      const hash = '0x' + sha256(secret)
+    const __secret = genSecret()
+    const swapAmount = 1 * 1e18
+    const secret = '0x' + __secret.toString('hex')
+    const hash = '0x' + sha256(__secret)
 
+    it('Alice locks ether', async () => {
       await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
 
       const _swap = await swap.swaps.call(alice, bob, hash)
@@ -42,29 +60,29 @@ contract('AtomicSwap', async (accounts) => {
 
       const [_secret, _hash, created, balance] = _swap.valueOf()
 
-      assert.notEqual(_secret, secret, 'should not be published')
+      assert.notEqual(secret, _secret, 'should not be published')
       assert.equal(hash, _hash, 'should be the same hash')
       assert.equal(balance.toNumber(), swapAmount, 'should be funded')
     })
 
     it('Bob withdraw ether', async () => {
-      const secret = 'aaa000aaa000'
-      const swapAmount = 100000
-
       const balance_before = web3.eth.getBalance(bob).toNumber()
-      console.log('Bobs balance before withdraw:', balance_before)
+
+      console.log('secret', secret)
 
       await swap.withdraw(alice, secret, {from: bob})
+
       const _swap = await swap.swaps.call(alice, bob, hash)
       console.log('Swap', _swap)
 
       const [_secret, _hash, created, balance] = _swap.valueOf()
-      console.log(_secret, _hash, created, balance)
+
+      assert.equal(balance.toNumber(), swapAmount, 'balance should be the same as funded')
       assert.equal(_secret, secret, 'should be published after withdraw')
 
       const balance_after = web3.eth.getBalance(bob).toNumber()
-      console.log('Bobs balance after withdraw:', balance_after)
-      assert.equal(balance_before + swapAmount, balance_after, 'bob received ether')
+
+      assert(balance_before < balance_after, 'bob received ether')
     })
   })
 
@@ -75,6 +93,9 @@ contract('AtomicSwap', async (accounts) => {
   // guy 2 tries to guess secret but fails
 
   // guy 1 locks ether twice with the same secret
+
+  // guy 1 locks money
+  // guy 2 tries to withdraw two times a row
 
   // guy 1 locks ether
   // guy 1 withdraw after timeout / check time-travel.js
