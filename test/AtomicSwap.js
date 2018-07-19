@@ -24,7 +24,6 @@ contract('AtomicSwap', async (accounts) => {
   describe('sha256', () => {
     it('the same in js', async () => {
       const __secret = genSecret()
-
       const secret = '0x' + __secret.toString('hex')
       const hash = '0x' + sha256(__secret)
 
@@ -45,10 +44,18 @@ contract('AtomicSwap', async (accounts) => {
   // guy 1 locks ether twice with different secrets
   // guy 2 withdraws both successfully
   describe('successful swaps', () => {
-    const __secret = genSecret()
     const swapAmount = 1 * 1e18
+    const __secret = genSecret()
     const secret = '0x' + __secret.toString('hex')
     const hash = '0x' + sha256(__secret)
+
+    const __secret2 = genSecret()
+    const secret2 = '0x' + __secret2.toString('hex')
+    const hash2 = '0x' + sha256(__secret2)
+
+    const __secret3 = genSecret()
+    const secret3 = '0x' + __secret3.toString('hex')
+    const hash3 = '0x' + sha256(__secret3)
 
     it('Alice locks ether', async () => {
       await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
@@ -84,12 +91,12 @@ contract('AtomicSwap', async (accounts) => {
     })
 
     it('Locks twice with the same secret', async () => {
-      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
-      const _swap1 = await swap.swaps.call(alice, bob, hash)
+      await swap.deposit(alice, hash2, { from: bob, value: swapAmount /* wei */ })
+      const _swap1 = await swap.swaps.call(bob, alice, hash2)
       const [_secret1, _hash1, created1, balance1] = _swap1.valueOf()
 
-      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
-      const _swap2 = await swap.swaps.call(alice, bob, hash)
+      await swap.deposit(alice, hash2, { from: bob, value: swapAmount /* wei */ })
+      const _swap2 = await swap.swaps.call(bob, alice, hash2)
       const [_secret2, _hash2, created2, balance2] = _swap2.valueOf()
 
       assert.notEqual(_secret1, _secret2, 'same secret')
@@ -99,13 +106,13 @@ contract('AtomicSwap', async (accounts) => {
     })
 
     it('Withdraw two times in a row', async () => {
-      assert(await swap.withdraw(alice, secret, {from: bob}), 'valid first withdrawal')
-      assertRevert(await swap.withdraw(alice, secret, {from: bob}), 'invalid second withdrawal')
+      assert(await swap.withdraw(alice, secret2, {from: bob}), 'valid first withdrawal')
+      assertRevert(await swap.withdraw(alice, secret2, {from: bob}), 'invalid second withdrawal')
     })
 
     it('Locks and random secret does not fit', async () => {
       const wrongSecret = '0x' + 'YOURMOM'
-      await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
+      await swap.deposit(bob, hash3, { from: alice, value: swapAmount /* wei */ })
       const balance_before = web3.eth.getBalance(bob).toNumber()
 
       const _reply = await swap.withdraw(alice, wrongSecret, {from: bob})
