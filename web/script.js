@@ -44,21 +44,21 @@ async function setup() {
 
   data = world.getCountries()
 
-  const [ countries, prices, owners ] = await data
+  const [ ids, countries, prices, owners ] = await data
 
   countries.forEach( ({ name, color, text }, index) => {
-    console.log(name, color, text, prices[index], owners[index])
+    console.log(ids[index], name, color, text, prices[index], owners[index])
 
     const price = parseInt(prices[index])
     const elem = country_template.cloneNode(true)
 
     elem.style.background = color.replace('0x', '#')
-    elem.querySelector('.country-id').innerText = index
+    elem.querySelector('.country-id').innerText = ids[index]
     elem.querySelector('.country-name').innerText = name
     elem.querySelector('.country-text').innerText = text
     elem.querySelector('.country-price').innerText = web3.utils.fromWei('' + price)
     elem.querySelector('.buy-country').innerText = 'Buy!'
-    elem.querySelector('.buy-country').onclick = () => world.buyCountry(index, price + 1e17)
+    elem.querySelector('.buy-country').onclick = () => world.buyCountry(ids[index], price + 1e18 + 1e17)
 
     list.appendChild(elem)
   })

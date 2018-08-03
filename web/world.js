@@ -48,6 +48,7 @@ class World {
       this.token.methods.ownerOf(id).call() )
 
     return Promise.all([
+      Promise.all(_ids),
       Promise.all(_countries),
       Promise.all(_prices),
       Promise.all(_owners)
