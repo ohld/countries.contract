@@ -12,6 +12,7 @@ const genSecret = () => crypto.randomBytes(32)
 contract('AtomicSwap', async (accounts) => {
 
   const Owner = accounts[0]
+  console.log(`Owner is ${Owner}`)
   const alice = accounts[1]
   const bob = accounts[2]
 
@@ -95,19 +96,14 @@ contract('AtomicSwap', async (accounts) => {
       const _swap1 = await swap.swaps.call(bob, alice, hash2)
       const [_secret1, _hash1, created1, balance1] = _swap1.valueOf()
 
-      await swap.deposit(alice, hash2, { from: bob, value: swapAmount /* wei */ })
-      const _swap2 = await swap.swaps.call(bob, alice, hash2)
-      const [_secret2, _hash2, created2, balance2] = _swap2.valueOf()
+      const _secondDeposit = swap.deposit(alice, hash2, { from: bob, value: swapAmount /* wei */ })
 
-      assert.notEqual(_secret1, _secret2, 'same secret')
-      assert.equal(_hash1, _hash2, 'same hash')
-      assert.equal(created1, created2, 'same created')
-      assert.equal(balance1, balance2, 'same balance')
+      assertRevert(_secondDeposit)
     })
 
     it('Withdraw two times in a row', async () => {
-      assert(await swap.withdraw(alice, secret2, {from: bob}), 'valid first withdrawal')
-      assertRevert(await swap.withdraw(alice, secret2, {from: bob}), 'invalid second withdrawal')
+      assert(await swap.withdraw(bob, secret2, {from: alice}), 'valid first withdrawal')
+      assertRevert(swap.withdraw(bob, secret2, {from: alice}), 'invalid second withdrawal')
     })
 
     it('Locks and random secret does not fit', async () => {
@@ -115,11 +111,11 @@ contract('AtomicSwap', async (accounts) => {
       await swap.deposit(bob, hash3, { from: alice, value: swapAmount /* wei */ })
       const balance_before = web3.eth.getBalance(bob).toNumber()
 
-      const _reply = await swap.withdraw(alice, wrongSecret, {from: bob})
+      const _reply = swap.withdraw(alice, wrongSecret, {from: bob})
       assertRevert(_reply)
 
       const balance_after = web3.eth.getBalance(bob).toNumber()
-      asser.equal(balance_before, balance_after, 'bob did not guess the secret')
+      assert.equal(balance_before, balance_after, 'bob did not guess the secret')
     })
   })
 
