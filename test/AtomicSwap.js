@@ -12,6 +12,7 @@ const genSecret = () => crypto.randomBytes(32)
 contract('AtomicSwap', async (accounts) => {
 
   const Owner = accounts[0]
+  console.log(`Owner is ${Owner}`)
   const alice = accounts[1]
   const bob = accounts[2]
 
@@ -24,7 +25,6 @@ contract('AtomicSwap', async (accounts) => {
   describe('sha256', () => {
     it('the same in js', async () => {
       const __secret = genSecret()
-
       const secret = '0x' + __secret.toString('hex')
       const hash = '0x' + sha256(__secret)
 
@@ -45,10 +45,18 @@ contract('AtomicSwap', async (accounts) => {
   // guy 1 locks ether twice with different secrets
   // guy 2 withdraws both successfully
   describe('successful swaps', () => {
-    const __secret = genSecret()
     const swapAmount = 1 * 1e18
+    const __secret = genSecret()
     const secret = '0x' + __secret.toString('hex')
     const hash = '0x' + sha256(__secret)
+
+    const __secret2 = genSecret()
+    const secret2 = '0x' + __secret2.toString('hex')
+    const hash2 = '0x' + sha256(__secret2)
+
+    const __secret3 = genSecret()
+    const secret3 = '0x' + __secret3.toString('hex')
+    const hash3 = '0x' + sha256(__secret3)
 
     it('Alice locks ether', async () => {
       await swap.deposit(bob, hash, { from: alice, value: swapAmount /* wei */ })
@@ -68,8 +76,6 @@ contract('AtomicSwap', async (accounts) => {
     it('Bob withdraw ether', async () => {
       const balance_before = web3.eth.getBalance(bob).toNumber()
 
-      console.log('secret', secret)
-
       await swap.withdraw(alice, secret, {from: bob})
 
       const _swap = await swap.swaps.call(alice, bob, hash)
@@ -84,13 +90,40 @@ contract('AtomicSwap', async (accounts) => {
 
       assert(balance_before < balance_after, 'bob received ether')
     })
+
+    it('Locks twice with the same secret', async () => {
+      await swap.deposit(alice, hash2, { from: bob, value: swapAmount /* wei */ })
+      const _swap1 = await swap.swaps.call(bob, alice, hash2)
+      const [_secret1, _hash1, created1, balance1] = _swap1.valueOf()
+
+      const _secondDeposit = swap.deposit(alice, hash2, { from: bob, value: swapAmount /* wei */ })
+
+      assertRevert(_secondDeposit)
+    })
+
+    it('Withdraw two times in a row', async () => {
+      assert(await swap.withdraw(bob, secret2, {from: alice}), 'valid first withdrawal')
+      assertRevert(swap.withdraw(bob, secret2, {from: alice}), 'invalid second withdrawal')
+    })
+
+    it('Locks and random secret does not fit', async () => {
+      const wrongSecret = '0x' + 'YOURMOM'
+      await swap.deposit(bob, hash3, { from: alice, value: swapAmount /* wei */ })
+      const balance_before = web3.eth.getBalance(bob).toNumber()
+
+      const _reply = swap.withdraw(alice, wrongSecret, {from: bob})
+      assertRevert(_reply)
+
+      const balance_after = web3.eth.getBalance(bob).toNumber()
+      assert.equal(balance_before, balance_after, 'bob did not guess the secret')
+    })
   })
 
   // guy 1 does not lock ether
   // guy 2 tries to withdraw, failed
 
-  // guy 1 lcks ether
-  // guy 2 tries to guess secret but fails
+  // guy 1 lcks ether  DONE
+  // guy 2 tries to guess secret but fails  DONE
 
   // guy 1 locks ether twice with the same secret
 
@@ -100,9 +133,6 @@ contract('AtomicSwap', async (accounts) => {
   // guy 1 locks ether
   // guy 1 withdraw after timeout / check time-travel.js
 
-  describe('errorneus swaps', () => {
-
-  })
   // contract call ???
 
 })

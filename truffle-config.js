@@ -1,6 +1,6 @@
 'use strict';
 let HDWalletProvider = require('truffle-hdwallet-provider')
-let mnemonic = "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat"
+let mnemonic = "prosper blame pigeon what chest volume whip toast avocado tennis hotel script"
 let rinkebyURL = "https://rinkeby.infura.io/sF8QaFr5COSzwukN3V2Y"
 
 module.exports = {
