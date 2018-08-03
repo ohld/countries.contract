@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<script src="web3.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+<script src="erc20.js"></script>
+<script src="wallet.js"></script>
+<script src="script.js"></script>
+<style type="text/css">
+  body {
+    font-size: 18px;
+    font-family: "Helvetica";
+  }
+</style>
+</head>
+<body>
+
+<h1>Your address is:</h1>
+
+<a href="#" class="link-address" target="_blank">
+  <span class="address" id="address">&nbsp;</span>
+</a>
+
+<br />
+
+<span class="balance-block">
+Balance: <span class="balance">...</span>
+</span>
+
+<br />
+<a href="#" class="link-deposit cb-element" data-clipboard-target="#address">Deposit</a>
+<a href="#" class="link-withdraw">Withdraw</a>
+
+<ul class="token-list">
+  <li class="token">
+    <span class="token-name">...</span>
+    -
+    <span class="token-balance">...</span>
+    <a href="#" class="send-token">Send</a>
+  </li>
+</ul>
+
+</body>
+</html>
