@@ -3,8 +3,13 @@
 <head>
 <script src="web3.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+
 <script src="erc20.js"></script>
 <script src="wallet.js"></script>
+
+<script src="worldabi.js"></script>
+<script src="world.js"></script>
+
 <script src="script.js"></script>
 <style type="text/css">
   body {
@@ -32,12 +37,14 @@ Balance: <span class="balance">...</span>
 <a href="#" class="link-withdraw">Withdraw</a>
 
 <ul class="token-list">
-  <li class="token">
-    <span class="token-name">...</span>
-    -
-    <span class="token-balance">...</span>
-    <a href="#" class="send-token">Send</a>
+  <li class="country">
+    <span class="country-id">ID</span>
+    <span class="country-name">NAME</span>
+    "<span class="country-text">TEXT</span>"
+    <span class="country-price">PRICE</span>
+    <a href="#" class="buy-country" data-id="0">ACTION</a>
   </li>
+
 </ul>
 
 </body>

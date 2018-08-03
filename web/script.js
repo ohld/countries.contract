@@ -1,19 +1,12 @@
 const ETHERSCANBASE="https://rinkeby.etherscan.io/address/"
+
 const CONFIG = {
-  PRIV: "0xd63264601ef2d420fe05decf1e3f7756b2826d69c33d16b7dd1fb5b0d79fe91d",
+  PRIV: "",
   CONTRACT: "0x60c205722c6c797c725a996cf9cCA11291F90749",
 }
 
 function updateBalance( newBalance ) {
   $('.balance').innerText = "" + (newBalance / 1e18) + " ETH     /      " + newBalance + " wei"
-}
-
-function updateTokenBalance( tokenIndex, newBalance ) {
-  $('.token .token-balance').innerText = newBalance
-}
-
-function updateTokenName( tokenIndex, name ) {
-  $('.token .token-name').innerText = name
 }
 
 function deposit() {
@@ -27,23 +20,12 @@ function withdraw(dest, value) {
   return wallet.withdraw(dest, value)
 }
 
-function withdrawToken(token, dest, value) {
-  token = token || wallet.tokens[0]
-  dest = dest || window.prompt("Send to:")
-  value = value || window.prompt("Amount of tokens (current balance " + token.balance + " " + token.name + "): ")
-
-  value = parseInt(value) || 0
-
-  let transaction = token.send(dest, value)
-
-  console.log( transaction )
-  return transaction
-}
-
 async function setup() {
   new ClipboardJS('.cb-element');
 
-  wallet.init(CONFIG.PRIV)
+  const account = wallet.init(CONFIG.PRIV)
+
+  const world = new World(account)
 
   $ = (selector) => document.querySelector(selector)
 
@@ -57,12 +39,30 @@ async function setup() {
   $('.link-deposit').onclick = () => deposit()
   $('.link-withdraw').onclick = () => withdraw()
 
-  let token = await wallet.addToken(CONFIG.CONTRACT)
-  let tokenBalance = await token.getBalance()
-  updateTokenBalance( 0, tokenBalance )
-  updateTokenName( 0, token.name )
+  const country_template = $('.country')
+  const list = $('.token-list')
 
-  $('.send-token').onclick = () => withdrawToken()
+  data = world.getCountries()
+
+  const [ countries, prices, owners ] = await data
+
+  countries.forEach( ({ name, color, text }, index) => {
+    console.log(name, color, text, prices[index], owners[index])
+
+    const price = parseInt(prices[index])
+    const elem = country_template.cloneNode(true)
+
+    elem.style.background = color.replace('0x', '#')
+    elem.querySelector('.country-id').innerText = index
+    elem.querySelector('.country-name').innerText = name
+    elem.querySelector('.country-text').innerText = text
+    elem.querySelector('.country-price').innerText = web3.utils.fromWei('' + price)
+    elem.querySelector('.buy-country').innerText = 'Buy!'
+    elem.querySelector('.buy-country').onclick = () => world.buyCountry(index, price + 1e17)
+
+    list.appendChild(elem)
+  })
+
 }
 
 window.onload = setup;
