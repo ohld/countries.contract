@@ -133,9 +133,6 @@ contract('AtomicSwap', async (accounts) => {
   // guy 1 locks ether
   // guy 1 withdraw after timeout / check time-travel.js
 
-  describe('errorneus swaps', () => {
-
-  })
   // contract call ???
 
 })
