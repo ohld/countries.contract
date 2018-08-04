@@ -58,7 +58,29 @@ async function setup() {
     elem.querySelector('.country-text').innerText = text
     elem.querySelector('.country-price').innerText = web3.utils.fromWei('' + price)
     elem.querySelector('.buy-country').innerText = 'Buy!'
-    elem.querySelector('.buy-country').onclick = () => world.buyCountry(ids[index], price + 1e18 + 1e17)
+
+    if (owners[index] === wallet.account.address) {
+
+      elem.querySelector('.buy-country').onclick = () =>
+      world.buyCountry(ids[index], price + 1e17)
+
+      elem.querySelector('.change.color').onclick = () => {
+        const color = window.prompt('Input new color')
+        world.customize(ids[index], { color })
+      }
+
+      elem.querySelector('.change.text').onclick = () => {
+        const text = window.prompt('Input new text')
+        world.customize(ids[index], { text })
+      }
+
+      elem.querySelector('.change.random.color').onclick = () => {
+        world.customize(ids[index], { color: '0x33ee00' })
+      }
+    } else {
+      elem.querySelectorAll('.change').forEach(
+        elem => elem.style.display = 'none' )
+    }
 
     list.appendChild(elem)
   })

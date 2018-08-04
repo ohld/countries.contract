@@ -64,14 +64,29 @@ class World {
 
     const lastPrice = await this.token.methods.getCountryLastPrice(id).call()
 
-    // if (price < lastPrice) throw new Error(`Price is less: ${price} < ${lastPrice}`)
-    // if (price <= lastPrice) price = parseInt(lastPrice)
+    if (price < lastPrice) throw new Error(`Price is less: ${price} < ${lastPrice}`)
 
     const value = (price)
 
     const receipt = this.token.methods.buy(id).send({ value, ...this.params })
 
     receipt.on('transactionHash', (hash) => console.log('buy', hash))
+
+    return receipt
+  }
+
+  async customize(id, { color, text }) {
+    if (!id && id !== 0) throw new Error(`No id`)
+
+    const _country = await this.token.methods.getCountry(id).call()
+    const _color = _country.color
+    const _text = _country.text
+
+    const receipt = this.token.methods.customize(id, color || _color, text || _text).send(this.params)
+
+    receipt.on('transactionHash', (hash) => console.log('color', hash))
+
+    receipt.catch(error => console.error(error))
 
     return receipt
   }
