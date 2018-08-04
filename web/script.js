@@ -13,8 +13,8 @@ const drawCountry = (data, template) => {
 
   elem.style.background = color.replace('0x', '#')
   elem.querySelector('.country-id').innerText = id
-  elem.querySelector('.country-name').innerText = name
-  elem.querySelector('.country-text').innerText = text
+  elem.querySelector('.country-name').innerText = unescape(name)
+  elem.querySelector('.country-text').innerText = unescape(text)
   elem.querySelector('.country-price').innerText = web3.utils.fromWei('' + price)
   elem.querySelector('.buy-country').innerText = 'Buy!'
 
