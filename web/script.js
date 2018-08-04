@@ -67,6 +67,7 @@ const reload = async (world) => {
         elem.querySelector('.buy-country').onclick = (ev) => {
           world.buyCountry(ids[index], price + 1e17)
           .finally( () => ev.target.innerText = 'Buy!' )
+          .finally( () => reload(world) )
 
           elem.querySelector('.buy-country').innerText = 'Loading...'
         }
@@ -80,6 +81,7 @@ const reload = async (world) => {
           const color = window.prompt('Input new color')
           world.customize(ids[index], { color })
             .finally( () => ev.target.innerText = 'PUT COLOR' )
+            .finally( () => reload(world) )
 
           ev.target.innerText = 'Loading...'
         }
@@ -88,6 +90,7 @@ const reload = async (world) => {
           const text = window.prompt('Input new text')
           world.customize(ids[index], { text })
             .finally( () => ev.target.innerText = 'PUT TEXT' )
+            .finally( () => reload(world) )
 
           ev.target.innerText = 'Loading...'
         }
@@ -101,6 +104,7 @@ const reload = async (world) => {
 
           world.customize(ids[index], { color: `0x${bytes}` })
             .finally( () => ev.target.innerText = 'MIX COLOR' )
+            .finally( () => reload(world) )
 
           ev.target.innerText = 'Loading...'
         }
