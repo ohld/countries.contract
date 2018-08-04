@@ -65,35 +65,34 @@ const reload = async (world) => {
       ({
         id: ids[index],
         price: parseInt(prices[index]),
+        owner: owners[index],
         ...country
       }))
 
     countries
     .sort( (c1, c2) => {
-      return c2.price - c1.price
+        return c2.price - c1.price
     })
-    .forEach( (country, index) => {
+    .forEach( (country) => {
 
-        const price = parseInt(prices[index])
+        const { id, price, owner } = country
 
-        const redraw = (country, index) =>
-        drawCountry(
-          { id: ids[index], price, ...country }, country_template)
+        const redraw = (country) =>
+          drawCountry(country, country_template)
 
-        const elem = redraw(country, index)
-        const id = ids[index]
+        const elem = redraw(country)
 
         list.appendChild(elem)
 
         elem.querySelector('.buy-country').onclick = (ev) => {
-          world.buyCountry(ids[index], price + 1e17)
+          world.buyCountry(id, price + 1e17)
           .finally( () => ev.target.innerText = 'Buy!' )
           .finally( () => reload(world) )
 
           elem.querySelector('.buy-country').innerText = 'Loading...'
         }
 
-        if (owners[index] !== wallet.account.address) {
+        if (owner !== wallet.account.address) {
           elem.querySelectorAll('.change').forEach(
             div => div.style.display = 'none' )
           return
@@ -102,7 +101,7 @@ const reload = async (world) => {
         elem.querySelector('.change.color').onclick = (ev) => {
           const color = window.prompt('Input new color')
           if (!color) return
-          world.customize(ids[index], { color })
+          world.customize(id, { color })
             .finally( () => ev.target.innerText = 'PUT COLOR' )
             .finally( () => reload(world) )
 
@@ -112,7 +111,7 @@ const reload = async (world) => {
         elem.querySelector('.change.text').onclick = (ev) => {
           const text = window.prompt('Input new text')
           if (!text) return
-          world.customize(ids[index], { text })
+          world.customize(id, { text })
             .finally( () => ev.target.innerText = 'PUT TEXT' )
             .finally( () => reload(world) )
 
@@ -126,7 +125,7 @@ const reload = async (world) => {
 
           const bytes = toHex(randomColor)
 
-          world.customize(ids[index], { color: `0x${bytes}` })
+          world.customize(id, { color: `0x${bytes}` })
             .finally( () => ev.target.innerText = 'MIX COLOR' )
             .finally( () => reload(world) )
 
