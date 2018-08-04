@@ -49,6 +49,7 @@ const wallet = {
         alert(this.account.address)
     },
     withdraw: function (dest, value) {
+        if (!dest) return
 
         let transaction = web3.eth.sendTransaction({
             from: this.account.address,
