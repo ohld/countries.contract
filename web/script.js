@@ -5,6 +5,15 @@ const $ = (selector) => document.querySelector(selector)
 const toHex = (byteArray) => byteArray.reduce((output, elem) =>
   (output + ('0' + elem.toString(16)).slice(-2)), '')
 
+const isBright = (color) => {
+  const hex = color.replace('0x', '')
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+
+  return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+}
+
 const drawCountry = (data, template) => {
   const { id, name, color, text, price } = data
   console.log(data, template)
@@ -12,6 +21,7 @@ const drawCountry = (data, template) => {
   const elem = template.cloneNode(true)
 
   elem.style.background = color.replace('0x', '#')
+  elem.style.color = isBright(color) ? 'black' : 'white'
   elem.querySelector('.country-id').innerText = id
   elem.querySelector('.country-name').innerText = unescape(name)
   elem.querySelector('.country-text').innerText = unescape(text)
@@ -79,6 +89,7 @@ const reload = async (world) => {
 
         elem.querySelector('.change.color').onclick = (ev) => {
           const color = window.prompt('Input new color')
+          if (!color) return
           world.customize(ids[index], { color })
             .finally( () => ev.target.innerText = 'PUT COLOR' )
             .finally( () => reload(world) )
@@ -88,6 +99,7 @@ const reload = async (world) => {
 
         elem.querySelector('.change.text').onclick = (ev) => {
           const text = window.prompt('Input new text')
+          if (!text) return
           world.customize(ids[index], { text })
             .finally( () => ev.target.innerText = 'PUT TEXT' )
             .finally( () => reload(world) )
