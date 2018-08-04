@@ -1,5 +1,5 @@
 const WORLD = {
-  address: '0x97b4e248a81f17af5ece8b7baf5f3f2cec8c139c',
+  address: '0x12c3bb20eed62181e5309b0158a7a82697d215c1',
   abi: WORLD_TOKEN_ABI,
 }
 
