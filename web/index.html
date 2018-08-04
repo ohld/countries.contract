@@ -29,6 +29,10 @@
     font-size: 18px;
     font-family: "Helvetica";
   }
+  .token-list :first-child a {
+    display: none;
+  }
+
   .country {
     padding: 15px;
 
@@ -76,16 +80,16 @@
 
       <span class="col s1 country-price">PRICE</span>
 
-      <a class="col s1 buy-country waves-effect waves-light btn" data-id="0">
+      <a class="col s1 buy-country waves-effect waves-light red btn" data-id="0">
         ACTION
       </a>
 
       <span class="col s5 actions">
         <a class="btn waves-effect waves-teal change text" data-id="0">PUT TEXT</a>
 
-        <a class="btn waves-effect waves-light change color" data-id="0">PUT COLOR</a>
+        <a class="btn waves-effect waves-red change color" data-id="0">PUT COLOR</a>
 
-        <a class="btn-flat waves-effect change random color" data-id="0">MIX COLOR</a>
+        <a class="btn waves-effect waves-orange change random color" data-id="0">MIX COLOR</a>
       </span>
 
       <span class="col offset-s1 country-text">TEXT</span>
