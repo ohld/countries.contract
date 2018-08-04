@@ -28,31 +28,51 @@
 <script src="script.js"></script>
 
 <script>
-  const initMap = () => {
-    const options = { zoom: 3.0, position: [47.19537,8.524404] }
+  const init = () => {
+    initMap()
+    setup()
+  }
+
+  const initMap = function () {
+    const options = {
+      atmosphere: true,
+      zoom: 0,
+      position: [47.19537,8.524404]
+    }
     const earth = new WE.map('earth_div', options)
+    //
+    // WE.tileLayer('http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg', {
+    //   minZoom: 0,
+    //   maxZoom: 5,
+    //   attribution: 'NASA'
+    // }).addTo(earth)
+
+    WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(earth)
   }
 </script>
 
 </head>
-<body onload="initMap()">
+<body onload="init()">
 
   <div class="container">
     <h1>Y000R.WORLD - buy your favourite Country, Town and MORE </h1>
-
-    <h2>Your address is:</h2>
 
     <a class="link-address" target="_blank">
       <span class="address" id="address">&nbsp;</span>
     </a>
 
     <br />
-
     <span class="balance-block">
     Balance: <span class="balance">...</span>
     </span>
+    <br />
 
-    <div id="earth_div" style="padding:2px;">
+    <a class="link-deposit cb-element" data-clipboard-target="#address">Deposit</a>
+    <a class="link-withdraw">Withdraw</a>
+
+    <div id="earth_div">
     </div>
   </div>
 </body>
