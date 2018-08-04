@@ -36,6 +36,10 @@ contract WorldToken is ERC721Token, Ownable {
         );
     }
 
+    function withdraw() public onlyOwner {
+        msg.sender.transfer(address(this).balance);
+    }
+
     /**
     * @dev calculates the next token ID based on totalSupply
     * @return uint256 for the next token ID
