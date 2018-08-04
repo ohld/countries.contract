@@ -64,16 +64,16 @@ const reload = async (world) => {
 
         list.appendChild(elem)
 
+        elem.querySelector('.buy-country').onclick = (ev) => {
+          world.buyCountry(ids[index], price + 1e17)
+          .finally( () => ev.target.innerText = 'Buy!' )
+
+          elem.querySelector('.buy-country').innerText = 'Loading...'
+        }
+
         if (owners[index] !== wallet.account.address) {
           elem.querySelector('.actions').style.display = 'none'
           return
-        }
-
-        elem.querySelector('.buy-country').onclick = (ev) => {
-          world.buyCountry(ids[index], price + 1e17)
-            .finally( () => ev.target.innerText = 'Buy!' )
-
-          elem.querySelector('.buy-country').innerText = 'Loading...'
         }
 
         elem.querySelector('.change.color').onclick = (ev) => {
