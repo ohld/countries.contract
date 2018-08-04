@@ -59,9 +59,20 @@ const reload = async (world) => {
     const country_template = $('.country')
     list.innerHTML = country_template.outerHTML
 
-    const [ ids, countries, prices, owners ] = await data
+    const [ ids, _countries, prices, owners ] = await data
 
-    countries.forEach( (country, index) => {
+    const countries = _countries.map( (country, index) =>
+      ({
+        id: ids[index],
+        price: parseInt(prices[index]),
+        ...country
+      }))
+
+    countries
+    .sort( (c1, c2) => {
+      return c2.price - c1.price
+    })
+    .forEach( (country, index) => {
 
         const price = parseInt(prices[index])
 
