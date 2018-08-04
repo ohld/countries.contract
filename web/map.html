@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+
+<!--Let browser know website is optimized for mobile-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<script src="http://www.webglearth.com/v2/api.js"></script>
+
+<script src="web3.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+
+<script src="erc20.js"></script>
+<script src="wallet.js"></script>
+
+<script src="worldabi.js"></script>
+<script src="world.js"></script>
+
+<script src="script.js"></script>
+
+<script>
+  const initMap = () => {
+    const options = { zoom: 3.0, position: [47.19537,8.524404] }
+    const earth = new WE.map('earth_div', options)
+  }
+</script>
+
+</head>
+<body onload="initMap()">
+
+  <div class="container">
+    <h1>Y000R.WORLD - buy your favourite Country, Town and MORE </h1>
+
+    <h2>Your address is:</h2>
+
+    <a class="link-address" target="_blank">
+      <span class="address" id="address">&nbsp;</span>
+    </a>
+
+    <br />
+
+    <span class="balance-block">
+    Balance: <span class="balance">...</span>
+    </span>
+
+    <div id="earth_div" style="padding:2px;">
+    </div>
+  </div>
+</body>
