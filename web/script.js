@@ -79,7 +79,7 @@ const reload = async (world) => {
         elem.querySelector('.change.color').onclick = (ev) => {
           const color = window.prompt('Input new color')
           world.customize(ids[index], { color })
-            .finally( () => ev.target.innerText = 'MIX COLOR' )
+            .finally( () => ev.target.innerText = 'PUT COLOR' )
 
           ev.target.innerText = 'Loading...'
         }
@@ -87,7 +87,7 @@ const reload = async (world) => {
         elem.querySelector('.change.text').onclick = (ev) => {
           const text = window.prompt('Input new text')
           world.customize(ids[index], { text })
-            .finally( () => ev.target.innerText = 'MIX COLOR' )
+            .finally( () => ev.target.innerText = 'PUT TEXT' )
 
           ev.target.innerText = 'Loading...'
         }
