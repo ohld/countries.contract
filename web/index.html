@@ -37,9 +37,9 @@
     padding: 15px;
 
   }
-  /* .country  {
-    color: inherit;
-  } */
+  .country span {
+    display: inline-block;
+  }
   .country :hover {
     filter: none;
   }
@@ -74,25 +74,29 @@
 
   <ul class="token-list">
     <li class="country row">
-      <span class="col s1 country-id">ID</span>
+      <span class="col s2 m1 l1 country-id">ID</span>
 
-      <span class="col s2 country-name">NAME</span>
+      <span class="col s4 m4 l2 country-name">NAME</span>
 
-      <span class="col s1 country-price">PRICE</span>
+      <span class="col s2 m1 l1 country-price">PRICE</span>
 
-      <a class="col s1 buy-country waves-effect waves-light red btn" data-id="0">
-        ACTION
-      </a>
-
-      <span class="col s5 actions">
-        <a class="btn waves-effect waves-teal change text" data-id="0">PUT TEXT</a>
-
-        <a class="btn waves-effect waves-red change color" data-id="0">PUT COLOR</a>
-
-        <a class="btn waves-effect waves-orange change random color" data-id="0">MIX COLOR</a>
+      <span class="col s4 m5 l2">
+        <a class="buy-country waves-effect waves-light red btn">
+          ACTION
+        </a>
       </span>
 
-      <span class="col offset-s1 country-text">TEXT</span>
+      <span class="col s4 m2 l2">
+        <a class="btn waves-effect waves-teal change text">PUT TEXT</a>
+      </span>
+      <span class="col s4 m2 l2">
+        <a class="btn waves-effect waves-red change color">PUT COLOR</a>
+      </span>
+      <span class="col s4 m2 l2">
+        <a class="btn waves-effect waves-orange change random color">MIX COLOR</a>
+      </span>
+
+      <span class="col s12 m8 l4 country-text">TEXT</span>
 
     </li>
     <br /><br />

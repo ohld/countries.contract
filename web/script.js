@@ -94,7 +94,8 @@ const reload = async (world) => {
         }
 
         if (owners[index] !== wallet.account.address) {
-          elem.querySelector('.actions').style.display = 'none'
+          elem.querySelectorAll('.change').forEach(
+            div => div.style.display = 'none' )
           return
         }
 
