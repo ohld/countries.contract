@@ -1,7 +1,27 @@
 const ETHERSCANBASE="https://rinkeby.etherscan.io/address/"
 
+const $ = (selector) => document.querySelector(selector)
+
+const toHex = (byteArray) => byteArray.reduce((output, elem) =>
+  (output + ('0' + elem.toString(16)).slice(-2)), '')
+
+const drawCountry = (data, template) => {
+  const { id, name, color, text, price } = data
+  console.log(data, template)
+  console.log(id, name, color, text, price)
+  const elem = template.cloneNode(true)
+
+  elem.style.background = color.replace('0x', '#')
+  elem.querySelector('.country-id').innerText = id
+  elem.querySelector('.country-name').innerText = name
+  elem.querySelector('.country-text').innerText = text
+  elem.querySelector('.country-price').innerText = web3.utils.fromWei('' + price)
+  elem.querySelector('.buy-country').innerText = 'Buy!'
+
+  return elem
+}
+
 const CONFIG = {
-  PRIV: "",
   CONTRACT: "0x60c205722c6c797c725a996cf9cCA11291F90749",
 }
 
@@ -20,17 +40,80 @@ function withdraw(dest, value) {
   return wallet.withdraw(dest, value)
 }
 
+
+const reload = async (world) => {
+
+    const data = world.getCountries()
+
+    const list = $('.token-list')
+    const country_template = $('.country')
+    list.innerHTML = country_template.outerHTML
+
+    const [ ids, countries, prices, owners ] = await data
+
+    countries.forEach( (country, index) => {
+
+      const redraw = (country, index) =>
+      drawCountry(
+        { id: ids[index], price: parseInt(prices[index]), ...country }, country_template)
+
+      const elem = redraw(country, index)
+      const id = ids[index]
+
+      if (owners[index] === wallet.account.address) {
+
+        elem.querySelector('.buy-country').onclick = () => {
+          world.buyCountry(ids[index], price + 1e17)
+            .finally( () => ev.target.innerText = 'Buy!' )
+
+          elem.querySelector('.buy-country').innerText = 'Loading...'
+        }
+
+        elem.querySelector('.change.color').onclick = (ev) => {
+          const color = window.prompt('Input new color')
+          world.customize(ids[index], { color })
+            .finally( () => ev.target.innerText = 'MIX COLOR' )
+
+          ev.target.innerText = 'Loading...'
+        }
+
+        elem.querySelector('.change.text').onclick = (ev) => {
+          const text = window.prompt('Input new text')
+          world.customize(ids[index], { text })
+            .finally( () => ev.target.innerText = 'MIX COLOR' )
+
+          ev.target.innerText = 'Loading...'
+        }
+
+        let arr = new Uint8Array([255,255,255])
+
+        elem.querySelector('.change.random.color').onclick = (ev) => {
+          const randomColor = window.crypto.getRandomValues(arr)
+
+          const bytes = toHex(randomColor)
+
+          world.customize(ids[index], { color: `0x${bytes}` })
+            .finally( () => ev.target.innerText = 'MIX COLOR' )
+
+          ev.target.innerText = 'Loading...'
+        }
+      } else {
+        elem.querySelectorAll('.change').forEach(
+          elem => elem.style.display = 'none' )
+        }
+
+        list.appendChild(elem)
+      })
+}
+
 async function setup() {
   new ClipboardJS('.cb-element');
 
-  const account = wallet.init(CONFIG.PRIV)
+  const account = wallet.init()
 
   const world = new World(account)
 
-  $ = (selector) => document.querySelector(selector)
-
   $('.address').innerText = wallet.account.address
-//  $('.address').onclick = () => wallet.deposit()
   $('.link-address').href = ETHERSCANBASE + wallet.account.address
 
   balance = await wallet.getBalance()
@@ -39,51 +122,8 @@ async function setup() {
   $('.link-deposit').onclick = () => deposit()
   $('.link-withdraw').onclick = () => withdraw()
 
-  const country_template = $('.country')
-  const list = $('.token-list')
-
-  data = world.getCountries()
-
-  const [ ids, countries, prices, owners ] = await data
-
-  countries.forEach( ({ name, color, text }, index) => {
-    console.log(ids[index], name, color, text, prices[index], owners[index])
-
-    const price = parseInt(prices[index])
-    const elem = country_template.cloneNode(true)
-
-    elem.style.background = color.replace('0x', '#')
-    elem.querySelector('.country-id').innerText = ids[index]
-    elem.querySelector('.country-name').innerText = name
-    elem.querySelector('.country-text').innerText = text
-    elem.querySelector('.country-price').innerText = web3.utils.fromWei('' + price)
-    elem.querySelector('.buy-country').innerText = 'Buy!'
-
-    if (owners[index] === wallet.account.address) {
-
-      elem.querySelector('.buy-country').onclick = () =>
-      world.buyCountry(ids[index], price + 1e17)
-
-      elem.querySelector('.change.color').onclick = () => {
-        const color = window.prompt('Input new color')
-        world.customize(ids[index], { color })
-      }
-
-      elem.querySelector('.change.text').onclick = () => {
-        const text = window.prompt('Input new text')
-        world.customize(ids[index], { text })
-      }
-
-      elem.querySelector('.change.random.color').onclick = () => {
-        world.customize(ids[index], { color: '0x33ee00' })
-      }
-    } else {
-      elem.querySelectorAll('.change').forEach(
-        elem => elem.style.display = 'none' )
-    }
-
-    list.appendChild(elem)
-  })
+  $('.link-refresh').onclick = () => reload(world)
+  reload(world)
 
 }
 

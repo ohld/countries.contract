@@ -66,9 +66,12 @@ class World {
 
     if (price < lastPrice) throw new Error(`Price is less: ${price} < ${lastPrice}`)
 
+    this.params.nonce = await web3.eth.getTransactionCount(this.account.address, "pending")
+
     const value = (price)
 
-    const receipt = this.token.methods.buy(id).send({ value, ...this.params })
+    const receipt = this.token.methods.buy(id)
+      .send({ value, ...this.params })
 
     receipt.on('transactionHash', (hash) => console.log('buy', hash))
 
@@ -78,13 +81,15 @@ class World {
   async customize(id, { color, text }) {
     if (!id && id !== 0) throw new Error(`No id`)
 
-    const _country = await this.token.methods.getCountry(id).call()
+    const _country = await this.fetchCountry(id)
     const _color = _country.color
     const _text = _country.text
 
+    this.params.nonce = await web3.eth.getTransactionCount(this.account.address, "pending")
+
     const receipt = this.token.methods.customize(id, color || _color, text || _text).send(this.params)
 
-    receipt.on('transactionHash', (hash) => console.log('color', hash))
+    receipt.on('transactionHash', (hash) => console.log('customize', hash))
 
     receipt.catch(error => console.error(error))
 
