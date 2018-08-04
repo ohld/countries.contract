@@ -53,16 +53,23 @@ const reload = async (world) => {
 
     countries.forEach( (country, index) => {
 
-      const redraw = (country, index) =>
-      drawCountry(
-        { id: ids[index], price: parseInt(prices[index]), ...country }, country_template)
+        const price = parseInt(prices[index])
 
-      const elem = redraw(country, index)
-      const id = ids[index]
+        const redraw = (country, index) =>
+        drawCountry(
+          { id: ids[index], price, ...country }, country_template)
 
-      if (owners[index] === wallet.account.address) {
+        const elem = redraw(country, index)
+        const id = ids[index]
 
-        elem.querySelector('.buy-country').onclick = () => {
+        list.appendChild(elem)
+
+        if (owners[index] !== wallet.account.address) {
+          elem.querySelector('.actions').style.display = 'none'
+          return
+        }
+
+        elem.querySelector('.buy-country').onclick = (ev) => {
           world.buyCountry(ids[index], price + 1e17)
             .finally( () => ev.target.innerText = 'Buy!' )
 
@@ -97,13 +104,8 @@ const reload = async (world) => {
 
           ev.target.innerText = 'Loading...'
         }
-      } else {
-        elem.querySelectorAll('.change').forEach(
-          elem => elem.style.display = 'none' )
-        }
 
-        list.appendChild(elem)
-      })
+    })
 }
 
 async function setup() {
